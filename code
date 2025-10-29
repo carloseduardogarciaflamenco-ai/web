@@ -1190,7 +1190,7 @@ li.cotizacion i {
   padding: 50px;
   overflow-y: auto;
   transition: left 0.4s ease;
-  z-index: 999;
+  z-index: 1001;
 }
 .box-menu.show {
   left: 0;
@@ -1234,24 +1234,56 @@ li.cotizacion i {
   }
 }
 
-/* 🔹 Fix Slider Móvil */
+/* 🔹 Fix Slider Móvil (Corregido) */
 @media (max-width: 768px) {
   .box-slider .img-full {
-    height: 150px !important;
-    min-height: unset !important;
-    padding: 40px 20px;
-    box-sizing: border-box; /* Añadido */
+    height: auto !important; /* Permitir altura automática */
+    min-height: 250px !important; /* Altura mínima para que no colapse */
+    padding: 20px; /* Padding general */
+    box-sizing: border-box;
+    display: flex; /* Usar flex para centrar contenido */
+    align-items: center;
+    justify-content: center;
   }
   .box-slider .img-full .info {
+    position: relative; /* Cambiar de absoluto a relativo */
+    top: auto; /* Resetear 'top' */
+    transform: none; /* Resetear 'transform' */
     text-align: center;
-    top: 50%; /* Centrado vertical */
-    transform: translateY(-50%); /* Centrado vertical */
+    width: 100%; /* Asegurar que ocupe el ancho */
   }
   .box-slider .img-full h1 {
-    font-size: 30px;
+    font-size: 28px; /* Reducir tamaño de fuente */
+    margin: 10px 0; /* Ajustar margen */
+  }
+  .box-slider .img-full h3 {
+    font-size: 18px; /* Reducir tamaño de fuente */
+    margin: 0;
   }
   .box-slider .img-full p {
     font-size: 14px;
+    line-height: 1.4;
+    margin: 15px auto; /* Ajustar margen */
+    max-width: 90%; /* Limitar ancho */
+  }
+  .box-slider .img-full .box-btn {
+    margin-top: 15px; /* Espacio para el botón */
+  }
+}
+
+/* Ocultar párrafo en pantallas muy pequeñas para evitar desbordamiento */
+@media (max-width: 480px) {
+  .box-slider .img-full {
+     min-height: 200px !important; /* Menos altura mínima */
+  }
+  .box-slider .img-full h1 {
+    font-size: 24px; /* Más pequeño */
+  }
+   .box-slider .img-full h3 {
+    font-size: 16px; /* Más pequeño */
+  }
+  .box-slider .img-full p {
+    display: none; /* Ocultar el párrafo */
   }
 }
 /* Eliminar espacio en blanco entre slider y box1 */
@@ -1590,10 +1622,10 @@ li.cotizacion i {
     </ul>
   </nav>
 
-  <span aria-label='Abrir menú' class='btn-open'><i class='fal fa-bars'/></span>
+<span aria-label='Abrir menú' class='btn-open' id='BOTON_MENU_PRINCIPAL'><i class='fal fa-bars'/></span>
 
-  <div class='box-menu'>
-    <span aria-label='Cerrar menú' class='btn-close'><i class='fal fa-times'/></span>
+<div class='box-menu' id='SLIDER_MENU_PRINCIPAL'>
+  <span aria-label='Cerrar menú' class='btn-close'><i class='fal fa-times'/></span>
     <nav id='cssmenu-mobile'>
       <ul>
         <li><a href='/'>Inicio</a></li>
@@ -2437,28 +2469,45 @@ function loadCSS(e,t,o){"use strict";var i=window.document.createElement("link")
 <script>
 //<![CDATA[
 
-// Script del Menú Móvil (header-wrapper)
-document.addEventListener('DOMContentLoaded', function() {
-  const btnOpen = document.querySelector('.btn-open');
-  const btnClose = document.querySelector('.btn-close');
-  const menu = document.querySelector('.box-menu');
-
-  if (btnOpen && btnClose && menu) {
-    btnOpen.addEventListener('click', () => menu.classList.add('show'));
-    btnClose.addEventListener('click', () => menu.classList.remove('show'));
-  }
-});
-
 // Inicialización de Sliders y otros scripts
 $(document).ready(function(){
+  
+  // ----------------------------------------------------
+  // 🔹 SCRIPT CORREGIDO (VERSIÓN 5 - Usando IDs Únicos)
+  // ----------------------------------------------------
+  
+  // Seleccionamos los elementos por su ID único
+  var btnOpen = $('#BOTON_MENU_PRINCIPAL');
+  var menu = $('#SLIDER_MENU_PRINCIPAL');
+  var btnClose = menu.find('.btn-close'); // El botón de cierre está DENTRO del menú
+
+  // Verificamos que los 3 elementos existan
+  if (btnOpen.length > 0 && menu.length > 0 && btnClose.length > 0) {
+    
+    // Al hacer clic en el botón de hamburguesa (abrir)
+    btnOpen.on('click', function(e) {
+      e.preventDefault(); // Prevenimos cualquier error
+      menu.css('left', '0'); // Forzamos la apertura del menú
+    });
+    
+    // Al hacer clic en el botón 'X' (cerrar)
+    btnClose.on('click', function(e) {
+      e.preventDefault(); // Prevenimos cualquier error
+      menu.css('left', '-100%'); // Forzamos el cierre del menú
+    });
+  }
+  // ----------------------------------------------------
+  // FIN DEL SCRIPT CORREGIDO
+  // ----------------------------------------------------
+
   
   // Slider Principal (comslider)
   $('.comslider').slick({
     autoplay: true,
     autoplaySpeed: 4000,
-    arrows: false, // Se deshabilita para que coincida con el CSS
-    dots: false,   // Se deshabilita para que coincida con el CSS
-    fade: false, // Se cambia a false para un slide normal
+    arrows: false, 
+    dots: false,   
+    fade: false, 
     infinite: true,
     speed: 700,
     slidesToShow: 1,
@@ -2466,7 +2515,6 @@ $(document).ready(function(){
     pauseOnHover: !1,
     respondTo:"min",
     cssEase:"linear"
-    // NOTA: Se eliminó la segunda inicialización conflictiva que tenía arrows: true y fade: true.
   });
   
   // Slider Testimonial
@@ -2517,7 +2565,7 @@ $(document).ready(function(){
       {breakpoint:520,settings:{slidesToShow:3}}
     ]
   });
-
+  
   // Accordion
   var accordion=function(){var o=$(".js-accordion"),c=o.find(".js-accordion-header"),e=($(".js-accordion-item"),{speed:400,oneOpen:!1});return{init:function(o){c.on("click",function(){accordion.toggle($(this))}),$.extend(e,o),e.oneOpen&&$(".js-accordion-item.active").length>1&&$(".js-accordion-item.active:not(:first)").removeClass("active"),$(".js-accordion-item.active").find("> .js-accordion-body").show()},toggle:function(o){e.oneOpen&&o[0]!=o.closest(".js-accordion").find("> .js-accordion-item.active > .js-accordion-header")[0]&&o.closest(".js-accordion").find("> .js-accordion-item").removeClass("active").find(".js-accordion-body").slideUp(),o.closest(".js-accordion-item").toggleClass("active"),o.next().stop().slideToggle(e.speed)}}}();
   accordion.init({speed:300,oneOpen:!0});
@@ -2536,7 +2584,7 @@ $(document).ready(function(){
   var month_format = [, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
   $(".company-wrapper .HTML .widget-content").each(function(){var e=$(this).find("span").attr("data-label"),t=($(this).find("span").attr("data-no"),$(this).parent().attr("id")),a=$(this).find("span").attr("data-type");a.match("polio")&&$.ajax({url:"/feeds/posts/default/-/"+e+"?alt=json-in-script&max-results=8",type:"get",dataType:"jsonp",success:function(e){for(var a="",n="<ul>",r=0;r<e.feed.entry.length;r++){for(var i=0;i<e.feed.entry[r].link.length;i++)if("alternate"==e.feed.entry[r].link[i].rel){a=e.feed.entry[r].link[i].href;break}var s=e.feed.entry[r].title.$t,l=e.feed.entry[r].category[0].term,c=(e.feed.entry[r].author[0].name.$t,e.feed.entry[r].content.$t),d=$("<div>").html(c);if(c.indexOf("//www.youtube.com/embed/")>-1)var o=e.feed.entry[r].media$thumbnail.url,f=o;else if(c.indexOf("<img")>-1)var h=d.find("img:first").attr("src"),f=h;else var f=no_image;n+='<li><a class="box-image" href="'+a+'" style="background:url('+f+') no-repeat center center;background-size: cover" title="'+s+'"><span class="polio-overlay"/></a><div class="recent-content"><h3 class="recent-title"><a href="'+a+'" title="'+s+'">'+s+'</a></h3><div class="category-polio"><a href="/search/label/'+l+'">'+l+'</a></div></div><div class="clr"/></li>'}n+="</ul>",$(".company-wrapper .HTML .widget-content").each(function(){var e=$(this).parent().attr("id");e==t&&($(this).html(n),$(this).parent().addClass("polio"),$(this).find(".box-image").each(function(){$(this).attr("style",function(e,t){return t.replace("/default.jpg","/mqdefault.jpg")}).attr("style",function(e,t){return t.replace("s72-c","s1600")})}))})}})});
   $(".company-wrapper .HTML .widget-content").each(function(){var e=$(this).find("span").attr("data-label"),t=$(this).find("span").attr("data-no"),a=($(this).prev("h2").text(),$(this).parent().attr("id")),n=$(this).find("span").attr("data-type");n.match("recentlist")&&$.ajax({url:"/feeds/posts/default/-/"+e+"?alt=json-in-script&max-results="+t,type:"get",dataType:"jsonp",success:function(e){for(var t="",n="<ul>",r=0;r<e.feed.entry.length;r++){for(var i=0;i<e.feed.entry[r].link.length;i++)if("alternate"==e.feed.entry[r].link[i].rel){t=e.feed.entry[r].link[i].href;break}var s=e.feed.entry[r].category[0].term,l=e.feed.entry[r].title.$t,c=e.feed.entry[r].content.$t,d=(e.feed.entry[r].author[0].name.$t,e.feed.entry[r].published.$t),o=d.substring(0,4),f=d.substring(5,7),h=d.substring(8,10),u=month_format[parseInt(f,10)]+" "+h+", "+o,p=$("<div>").html(c),y=c.replace(/<\S[^>]*>/g,"");if(50<y.length&&(y=y.substring(0,130)+"..."),-1<c.indexOf("//www.youtube.com/embed/"))var g=e.feed.entry[r].media$thumbnail.url;else g=-1<c.indexOf("<img")?p.find("img:first").attr("src"):no_image;n+='<li><div class="boxall"><span class="content-overlay"/><a class="box-image" href="'+t+'" style="background:url('+g+') no-repeat center center;background-size: cover" title="'+l+'"></a><div class="recent-content"><div class="category-gallery"><a class="icon '+s+'" href="/search/label/'+s+'"></a></div><h3 class="recent-title"><a href="'+t+'" title="'+l+'">'+l+'</a></h3><div class="category-recentlist"><a class="site-button btn-effect asmall" href="'+t+'" title="more"> Read More</a><span class="recent-date">'+u+"</span></div></div></div><p>"+y+'</p><div class="clear"/></li>'}n+="</ul>",$(".company-wrapper .HTML .widget-content").each(function(){$(this).parent().attr("id")==a&&($(this).html(n),$(this).parent().addClass("recentlist"),$(this).prev("h2").wrap('<div class="box-title"></div>'),$(this).find(".box-image").each(function(){$(this).attr("style",function(e,t){return t.replace("/default.jpg","/mqdefault.jpg")}).attr("style",function(e,t){return t.replace("s72-c","s1600")})}))})}})});
-
+  
   // Menú (antiguo #menu)
 
   // Timer (Contador)
@@ -2550,7 +2598,7 @@ $(document).ready(function(){
     var l=$("."+i);
     l.animate({width:e+"%"},3e3,function(){$(".speech-bubble").fadeIn()})
   });
-
+  
   // Backtop (Botón subir)
   function scrollToTop(){verticalOffset="undefined"!=typeof verticalOffset?verticalOffset:0,element=$("body"),offset=element.offset(),offsetTop=offset.top,$("html, body").animate({scrollTop:offsetTop},600,"linear")}
   $(document).on("scroll",function(){100<$(window).scrollTop()?$(".backtop").addClass("show"):$(".backtop").removeClass("show"});
